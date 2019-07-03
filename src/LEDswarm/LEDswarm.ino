@@ -1,13 +1,17 @@
+
+
 // TODO: convert Serial.printfs and println's to DEBUG statements we can turn on/off
 
 //#define _TASK_MICRO_RES     // Turn on microsecond timing - painlessMesh does not support it (yet)
 
-#define DEBUG
+//#define DEBUG
 
 #define TIME_SYNC_INTERVAL  60000000  // Mesh time resync period, in us. 1 minute
 #define FASTLED_ALLOW_INTERRUPTS 0    // Allow interrupts, to prevent wifi weirdness
+#define FASTLED_INTERNAL 
 #define USE_GET_MILLISECOND_TIMER     // Define our own millis() source for FastLED beat functions: see get_millisecond_timer()
 
+//#define FASTLED_ESP8266_D1_PIN_ORDER
 #include "LEDswarm.h"
 #include "painlessMesh.h"
 #include "ArduinoTapTempo.h"  // pio lib [--global] install https://github.com/dxinteractive/ArduinoTapTempo.git
@@ -26,9 +30,9 @@
 #define   MESH_PORT         5555
 
 #define   DEFAULT_PATTERN   6
-#define   DEFAULT_BRIGHTNESS  80  // 0-255, higher number is brighter.
-#define   NUM_LEDS          20
-#define   DATA_PIN          2
+#define   DEFAULT_BRIGHTNESS  25  // 0-255, higher number is brighter.
+#define   NUM_LEDS          15
+#define   DATA_PIN          4 //D1 Mini D2
 
 // LED variables
 CRGB      leds[NUM_LEDS];
@@ -46,7 +50,32 @@ uint32_t activeSlave ;
 // BPM variables
 ArduinoTapTempo tapTempo;
 bool newBPMSet = true ;     // flag for when new BPM is set by button
-uint32_t currentBPM = 120 ; // default BPM of ArduinoTapTempo
+uint32_t currentBPM = 60 ; // default BPM of ArduinoTapTempo
+
+void checkButtonPress() {
+  static unsigned long buttonTimer = 0;
+  static bool buttonActive = false;
+
+  if( digitalRead(BUTTON_PIN) == LOW ) {
+    if (buttonActive == false) {
+      buttonActive = true;
+      buttonTimer = millis();
+    }
+  } else {
+    if (buttonActive == true) {
+      buttonActive = false; // reset
+      uint8_t SHORT_PRESS_MIN_TIME = 10;
+      if ( millis() - buttonTimer > SHORT_PRESS_MIN_TIME ) {    // test if debounce is reached
+        tapTempo.update(true); // update ArduinoTapTempo
+        Serial.printf("%s %u: Button TAP. %u. BPM: ", role.c_str(), mesh.getNodeTime() );
+        Serial.println(tapTempo.getBPM() );
+        newBPMSet = true ;
+      }
+    }
+  }
+} // end checkButtonPress()
+
+
 
 // Task variables
 #define TASK_CHECK_BUTTON_PRESS_INTERVAL    10   // in milliseconds
@@ -58,7 +87,7 @@ Task taskSelectNextPattern( TASK_SECOND * 15, TASK_FOREVER, &selectNextPattern);
 //Task taskRunPatternOnNode( TASK_IMMEDIATE, TASK_ONCE, &runPatternOnNode );
 
 void setup() {
-  Serial.begin(76800);
+  Serial.begin(115200);
   delay(1000); // Startup delay; let things settle down
 
   //mesh.setDebugMsgTypes( ERROR | MESH_STATUS | CONNECTION | SYNC | COMMUNICATION | GENERAL | MSG_TYPES | REMOTE ); // all types on
@@ -99,18 +128,19 @@ void loop() {
 // Better to have static and keep the memory allocated or not??
 void sendMessage() {
   if( ! tapTempo.isChainActive() or (currentPattern != nextPattern) ) {
-    static DynamicJsonBuffer jsonBuffer;
-    static JsonObject& msg = jsonBuffer.createObject();
+    static DynamicJsonDocument jsonBuffer(1024);
+//    static JsonObject& msg = jsonBuffer.createObject();
 
     currentPattern = nextPattern ;       // update our own running pattern
     currentBPM     = tapTempo.getBPM() ; // update our BPM with (possibly new) BPM
     newBPMSet      = false ;            // reset the flag
 
-    msg["currentBPM"] = currentBPM;
-    msg["currentPattern"] = currentPattern ;
+    jsonBuffer["currentBPM"] = currentBPM;
+    jsonBuffer["currentPattern"] = currentPattern ;
 
     String str;
-    msg.printTo(str);
+//    jsonBuffer.printTo(str);
+    serializeJson(jsonBuffer, str);
     mesh.sendBroadcast(str);
 
     Serial.printf("%s %u: Sent broadcast message: ", role.c_str(), mesh.getNodeTime() );
@@ -122,27 +152,7 @@ void sendMessage() {
 
 #define SHORT_PRESS_MIN_TIME 50   // minimum time for a short press - debounce
 
-void checkButtonPress() {
-  static unsigned long buttonTimer = 0;
-  static bool buttonActive = false;
 
-  if( digitalRead(BUTTON_PIN) == LOW ) {
-    if (buttonActive == false) {
-      buttonActive = true;
-      buttonTimer = millis();
-    }
-  } else {
-    if (buttonActive == true) {
-      buttonActive = false; // reset
-      if ( millis() - buttonTimer > SHORT_PRESS_MIN_TIME ) {    // test if debounce is reached
-        tapTempo.update(true); // update ArduinoTapTempo
-        Serial.printf("%s %u: Button TAP. %u. BPM: ", role.c_str(), mesh.getNodeTime() );
-        Serial.println(tapTempo.getBPM() );
-        newBPMSet = true ;
-      }
-    }
-  }
-} // end checkButtonPress()
 
 // This function is called by FastLED inside lib8tion.h. Requests it to use mesg.getNodeTime instead of internal millis() timer.
 // Makes every pattern on each node synced!
@@ -162,7 +172,10 @@ uint32_t get_millisecond_timer() {
 //   nodes.pop_front();
 //   nodes.push_back(node);
 //
-//   static DynamicJsonBuffer jsonBuffer;
+//   static 
+
+ 
+// jsonBuffer;
 //   static JsonObject& msg = jsonBuffer.createObject();
 //
 //   msg["runOnce"] = currentPattern;

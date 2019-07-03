@@ -9,8 +9,8 @@ void checkMastership() {
   Serial.printf("Node list: ");
 
 
-  while( node != nodes.end() ) {
-    if( *node < masterNodeId ) {
+  while ( node != nodes.end() ) {
+    if ( *node < masterNodeId ) {
       masterNodeId = *node ;
     }
     Serial.printf(" %u", *node);
@@ -18,7 +18,7 @@ void checkMastership() {
   }
   Serial.printf(" (%d nodes)\n", nodes.size());
 
-  if( mesh.getNodeId() == masterNodeId ) {
+  if ( mesh.getNodeId() == masterNodeId ) {
     role = "MASTER";
     taskSendMessage.enableIfNot() ;
     taskCheckButtonPress.enableIfNot() ;
@@ -36,11 +36,14 @@ void checkMastership() {
 
 void receivedCallback( uint32_t from, String &msg ) {
   //  Serial.printf("Received msg from %u: %s\n", from, msg.c_str());
-  if( role == "SLAVE" ) {
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& root  = jsonBuffer.parseObject(msg);
+  if ( role == "SLAVE" ) {
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, msg);
+    if (error)
+      return;
+    //    JsonObject& root  = jsonBuffer.parseObject(msg);
 
-    if( root["currentBPM"] ) {
+    if ( root["currentBPM"] ) {
       currentBPM = root["currentBPM"].as<uint32_t>() ;  // TODO: set BPM in tapTempo object
       currentPattern   = root["currentPattern"].as<uint8_t>() ;
       Serial.printf("%s %u: \tBPM: %u\t Pattern: %u\n", role.c_str(), mesh.getNodeTime(), currentBPM, currentPattern );
@@ -50,9 +53,12 @@ void receivedCallback( uint32_t from, String &msg ) {
     //   executeOneCycle = true ;
     // }
 
-  } else if( role == "MASTER") {
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject& root  = jsonBuffer.parseObject(msg);
+  } else if ( role == "MASTER") {
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, msg);
+    if (error)
+      return;
+//    JsonObject& root  = root.parseObject(msg);
 
     uint32_t patternRunTime = root["patternRunTime"].as<uint32_t>() ;
     Serial.printf("%s %u (slave end time): \tBPM: %u\t Pattern: %u\tRunTime: %u\n", role.c_str(), mesh.getNodeTime(), currentBPM, currentPattern, patternRunTime );

@@ -1,4 +1,4 @@
-#define STEPS       3   // How wide the bands of color are.  1 = more like a gradient, 10 = more like stripes
+#define STEPS       10   // How wide the bands of color are.  1 = more like a gradient, 10 = more like stripes
 
 void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
   static uint8_t startIndex = 1;  // initialize at start
@@ -9,7 +9,9 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
     firstPatternIteration = false ;   // reset flag
   }
 
-  const CRGBPalette16 palettes[] = { RainbowStripeColors_p,
+  const CRGBPalette16 palettes[] = { 
+    RainbowStripeColors_p, //Used no matter waht
+    
     #ifdef RT_P_RB
     RainbowColors_p,
     #endif
@@ -42,11 +44,11 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
   }
 
   // add extra glitter during "fast"
-  if ( taskCurrentPatternRun.getInterval() < 10 ) {
-    addGlitter(250);
-  } else {
-    addGlitter(25);
-  }
+//  if ( taskCurrentPatternRun.getInterval() < 10 ) {
+//    addGlitter(250);
+//  } else {
+//    addGlitter(25);
+//  }
 
 
 FastLED.setBrightness( maxBright ) ;
