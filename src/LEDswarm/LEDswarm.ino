@@ -29,7 +29,7 @@
 #define   MESH_PASSWORD     "somethingSneaky"
 #define   MESH_PORT         5555
 
-#define   DEFAULT_PATTERN   6
+#define   DEFAULT_PATTERN   0  //this is what pattern to start on, changed from 6 to 0
 #define   DEFAULT_BRIGHTNESS  25  // 0-255, higher number is brighter.
 #define   NUM_LEDS          15
 #define   DATA_PIN          4 //D1 Mini D2
@@ -129,7 +129,6 @@ void loop() {
 void sendMessage() {
   if( ! tapTempo.isChainActive() or (currentPattern != nextPattern) ) {
     static DynamicJsonDocument jsonBuffer(1024);
-//    static JsonObject& msg = jsonBuffer.createObject();
 
     currentPattern = nextPattern ;       // update our own running pattern
     currentBPM     = tapTempo.getBPM() ; // update our BPM with (possibly new) BPM
@@ -139,7 +138,6 @@ void sendMessage() {
     jsonBuffer["currentPattern"] = currentPattern ;
 
     String str;
-//    jsonBuffer.printTo(str);
     serializeJson(jsonBuffer, str);
     mesh.sendBroadcast(str);
 
