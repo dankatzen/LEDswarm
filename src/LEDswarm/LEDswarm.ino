@@ -28,7 +28,7 @@
 #define   MESH_PORT         5555
 
 #define   DEFAULT_PATTERN   0  //this is what pattern to start on, changed from 6 to 0
-#define   DEFAULT_BRIGHTNESS  25  // 0-255, higher number is brighter.
+#define   DEFAULT_BRIGHTNESS  64  // 0-255, higher number is brighter.
 #define   NUM_LEDS          15
 #define   DATA_PIN          4 //D1 Mini D2
 
