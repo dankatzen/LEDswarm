@@ -1,5 +1,3 @@
-
-
 // TODO: convert Serial.printfs and println's to DEBUG statements we can turn on/off
 
 //#define _TASK_MICRO_RES     // Turn on microsecond timing - painlessMesh does not support it (yet)
