@@ -55,7 +55,8 @@ FastLED.setBrightness( maxBright ) ;
 FastLED.show();
 
 //  taskCurrentPatternRun.setInterval( beatsin16( tapTempo.getBPM(), 1500, 50000) ) ; // microseconds
-taskCurrentPatternRun.setInterval( beatsin16( tapTempo.getBPM(), 5, 50 ) ) ;
+//taskCurrentPatternRun.setInterval( beatsin16( tapTempo.getBPM(), 5, 50 ) ) ;
+taskCurrentPatternRun.setInterval(CURRENTPATTERN_SELECT_DEFAULT_INTERVAL) ;
 }
 
 
@@ -102,7 +103,7 @@ void strobe1() {
 #ifdef RT_FIRE2012
 #define COOLING  55
 #define SPARKING 120
-#define FIRELEDS round( NUM_LEDS / 2 )
+
 
 // TODO: replace with original Fire2012 for LED strips
 
@@ -113,6 +114,7 @@ void strobe1() {
 void Fire2012()
 {
   // Array of temperature readings at each simulation cell
+  const int FIRELEDS = round( NUM_LEDS / 2 );
   static byte heat[FIRELEDS];
 
   // Step 1.  Cool down every cell a little
@@ -659,9 +661,11 @@ void cylon() {
   //uint8_t ledPos = beatsin8( tapTempo.getBPM(), 0, NUM_LEDS - 1 ) ;
   //uint8_t ledPos = beatsin8( 40, 0, NUM_LEDS - 1 ) ;
   //uint8_t ledPos = lerp8by8( 0, NUM_LEDS-1, ease8InOutQuad beatsin8( 40 ))) ;
-  uint8_t ledPos = beatsin8( tapTempo.getBPM()/2, 0, NUM_LEDS - 1 ) ;
+  uint8_t ledPos = beatsin8( 60/2, 0, NUM_LEDS - 1 ) ;
+//  uint8_t ledPos = beatsin8( tapTempo.getBPM()/2, 0, NUM_LEDS - 1 ) ;  replaced with line above
   leds[ledPos] = CRGB::Orange ;
-  uint8_t ledPos2 = beatsin8( tapTempo.getBPM()/2, 0, NUM_LEDS - 1, 0, 40 ) ;
+  uint8_t ledPos2 = beatsin8( 60/2, 0, NUM_LEDS - 1, 0, 40 ) ;
+//  uint8_t ledPos2 = beatsin8( tapTempo.getBPM()/2, 0, NUM_LEDS - 1, 0, 40 ) ; replaced with line above  
   leds[ledPos2] = CRGB::Red ;
   FastLED.setBrightness( maxBright ) ;
   FastLED.show();

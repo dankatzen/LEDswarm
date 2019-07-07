@@ -1,7 +1,7 @@
 
 // Routine Palette Rainbow is always included - a safe routine
 const char *routines[] = {
-  "p_rb_stripe",
+//  "p_rb_stripe",
   #ifdef RT_P_RB
   "p_rb",
   #endif

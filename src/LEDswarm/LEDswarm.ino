@@ -21,15 +21,14 @@
 #define   TASK_MILLISECOND   1
 #endif
 
-#define   BUTTON_PIN        0
-
+//#define   BUTTON_PIN        0
 #define   MESH_PREFIX       "LEDforge"
 #define   MESH_PASSWORD     "somethingSneaky"
 #define   MESH_PORT         5555
 
 #define   DEFAULT_PATTERN   0  //this is what pattern to start on, changed from 6 to 0
 #define   DEFAULT_BRIGHTNESS  64  // 0-255, higher number is brighter.
-#define   NUM_LEDS          15
+#define   NUM_LEDS          16
 #define   DATA_PIN          4 //D1 Mini D2
 
 // LED variables
@@ -50,28 +49,28 @@ ArduinoTapTempo tapTempo;
 bool newBPMSet = true ;     // flag for when new BPM is set by button
 uint32_t currentBPM = 60 ; // default BPM of ArduinoTapTempo
 
-void checkButtonPress() {
-  static unsigned long buttonTimer = 0;
-  static bool buttonActive = false;
-
-  if( digitalRead(BUTTON_PIN) == LOW ) {
-    if (buttonActive == false) {
-      buttonActive = true;
-      buttonTimer = millis();
-    }
-  } else {
-    if (buttonActive == true) {
-      buttonActive = false; // reset
-      uint8_t SHORT_PRESS_MIN_TIME = 10;
-      if ( millis() - buttonTimer > SHORT_PRESS_MIN_TIME ) {    // test if debounce is reached
-        tapTempo.update(true); // update ArduinoTapTempo
-        Serial.printf("%s %u: Button TAP. %u. BPM: ", role.c_str(), mesh.getNodeTime() );
-        Serial.println(tapTempo.getBPM() );
-        newBPMSet = true ;
-      }
-    }
-  }
-} // end checkButtonPress()
+//void checkButtonPress() {
+//  static unsigned long buttonTimer = 0;
+//  static bool buttonActive = false;
+//
+//  if( digitalRead(BUTTON_PIN) == LOW ) {
+//    if (buttonActive == false) {
+//      buttonActive = true;
+//      buttonTimer = millis();
+//    }
+//  } else {
+//    if (buttonActive == true) {
+//      buttonActive = false; // reset
+//      uint8_t SHORT_PRESS_MIN_TIME = 10;
+//      if ( millis() - buttonTimer > SHORT_PRESS_MIN_TIME ) {    // test if debounce is reached
+//        tapTempo.update(true); // update ArduinoTapTempo
+//        Serial.printf("%s %u: Button TAP. %u. BPM: ", role.c_str(), mesh.getNodeTime() );
+//        Serial.println(tapTempo.getBPM() );
+//        newBPMSet = true ;
+//      }
+//    }
+//  }
+//} // end checkButtonPress()
 
 
 

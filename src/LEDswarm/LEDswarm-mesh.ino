@@ -53,7 +53,9 @@ void receivedCallback( uint32_t from, String &msg ) {
     //   executeOneCycle = true ;
     // }
 
-  } else if ( role == "MASTER") {
+  } //if SLAVE
+  
+  else if ( role == "MASTER") {  // If Master
     DynamicJsonDocument root(1024);
     DeserializationError error = deserializeJson(root, msg);
     if (error)
