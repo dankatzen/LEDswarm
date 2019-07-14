@@ -14,7 +14,7 @@
 // #define RT_TWIRL6_O
 // #define RT_FADE_GLITTER
 // #define RT_DISCO_GLITTER
- #define RT_FIRE2012
+// #define RT_FIRE2012
 // #define RT_HEARTBEAT
 // #define RT_FASTLOOP
 // #define RT_FASTLOOP2
